@@ -8,13 +8,13 @@ import (
 	"strings"
 )
 
-//ARTH
+//SUM is ARTH operation
 const SUM string = "SUM"
-const SUB string = "SUB"
-const MUL string = "MUL"
-const DIV string = "DIV"
-const MOD string = "MOD"
 
+//SUB is ARTH operation
+const SUB string = "SUB"
+
+//Protein is a structure for variable in the function
 type Protein struct {
 	label  string
 	id     int
@@ -23,14 +23,30 @@ type Protein struct {
 	interX []*Protein
 }
 
+//Cell is an environment of protein protein interaction
+type Cell struct {
+	proteinList []Protein
+}
+
 func main() {
+	//Creating empty cell structure
+	cell := CreateCell()
+
+	//reading the code and create protein
 	var filename = "field.txt"
 	code := ReadCode(filename)
-	fmt.Println(ConvertToProtein(code))
+	fmt.Println(ConvertToProtein(cell, code))
 
 }
 
-//Open file, read it into str, and then call convert protein
+//CreateCell create the Cell structure, this will be the space where protein interacts.
+func CreateCell() Cell {
+	var cell Cell
+	cell.proteinList = make([]Protein, 0)
+	return cell
+}
+
+//ReadCode open file, read it into str, and then call convert protein
 func ReadCode(filename string) string {
 
 	file, err := os.Open(filename)
@@ -49,7 +65,6 @@ func ReadCode(filename string) string {
 		code = code + scanner.Text() //append(lines, scanner.Text())
 		//fmt.Println("This line is: ", scanner.Text())
 	}
-
 	if scanner.Err() != nil {
 		fmt.Println("Sorry: there was some kind of error during the file reading")
 		os.Exit(1)
@@ -57,15 +72,21 @@ func ReadCode(filename string) string {
 	return code
 }
 
-//call detect keyword, create object and return protein object
-func ConvertToProtein(code string) Protein {
-	name, number := DetectOperator(code)
-
-	protein := CreateProtein(name, number)
-	return protein
+//ConvertToProtein call detect keyword, create object and return protein object
+func ConvertToProtein(cell Cell, code string) (Protein, Cell) {
+	dataType, name, number, proteinName := DetectOperator(code)
+	var protein Protein
+	if dataType == "number" {
+		protein = CreateProtein(name, number)
+	} else if dataType == "protein" {
+		protein, cell = BindToProtein(name, proteinName, cell)
+	} else {
+		panic("The dataType in ConvertToProtein is wrong!")
+	}
+	return protein, cell
 }
 
-func DetectOperator(code string) (string, int) {
+func DetectOperator(code string) (string, string, int, string) {
 	var splitCode []string = strings.Split(code, " ")
 	/*
 		  if splitCode[1] == "=" {
@@ -88,13 +109,42 @@ func DetectOperator(code string) (string, int) {
 			}
 			panic("Panic?")
 	*/
-	num, _ := strconv.Atoi(splitCode[2])
-	return splitCode[0], num
+	//convert the splitCode[2] to integer, if it is number, then return the numbe
+	//if it is not number, then return the string of the protein name
+	dataType := ""
+	vrbl := ""
+	//// TODO: Not sure whether the value of num when splitCode[2] is not an integer
+	num, err := strconv.Atoi(splitCode[2])
+	if err != nil {
+		vrbl = splitCode[2]
+		dataType = "protein"
+	} else {
+		dataType = "number"
+	}
+	return dataType, splitCode[0], num, vrbl
 }
 
+//CreateProtein use the name and number to create the protein with carbohydrate labling
 func CreateProtein(name string, number int) Protein {
 	var p Protein
 	p.label = name
 	p.chTree = number
 	return p
+}
+
+//BindToProtein add the proteinName into the interX list of protein name, and update the cell
+func BindToProtein(name, proteinName string, cell Cell) (Protein, Cell) {
+	num := 0
+	var tmpProtein, addProtein Protein
+	for i := 0; i < len(cell.proteinList); i++ {
+		if cell.proteinList[i].label == "name" {
+			tmpProtein = cell.proteinList[i]
+			num = i
+		} else if cell.proteinList[i].label == "proteinName" {
+			addProtein = cell.proteinList[i]
+		}
+	}
+	tmpProtein.interX = append(tmpProtein.interX, &addProtein)
+	cell.proteinList[num] = tmpProtein
+	return tmpProtein, cell
 }
