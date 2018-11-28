@@ -25,8 +25,8 @@ import (
 //ParseTree is the header pointer to the parse tree
 type ParseTree *Node
 
-//Node is an object that represents a node on the parse tree. It has children
-//and a name. Its children are in parsing order.
+//Node is an object on the parse tree. It has children and a name.
+//Its children are in parsing order.
 type Node struct {
 	name     string
 	children []*Node
