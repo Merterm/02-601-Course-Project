@@ -86,20 +86,23 @@ func Parse(filename string) ParseTree {
 //depending on the first keyword in the array. It adds a code node to the tree
 // and passes down the tree. Returns true if there is an error while parsing.
 func ParseCode(codeArr []string, ptr *Node) bool {
-	//Create a Code node
-	codeNode := new(Node)
-	codeNode.name = "CODE"
 
 	//Add the code node to the pointer's children
 	if ptr == nil {
+		//Create a Code node
+		codeNode := new(Node)
+		codeNode.name = "CODE"
 		ptr = codeNode
-	} else {
+	} else if ptr.name != "CODE" {
+		//Create a Code node
+		codeNode := new(Node)
+		codeNode.name = "CODE"
 		ptr.children = append(ptr.children, codeNode)
 	}
 
 	//Check whether the given array is empty or not
 	if len(codeArr) == 0 {
-		return false
+		return true //there is an error
 	}
 
 	//Check the first element and call the relevant function
