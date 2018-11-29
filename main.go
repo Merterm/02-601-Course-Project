@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"bufio"
 	"fmt"
@@ -27,18 +28,20 @@ type Protein struct {
 type Cell struct {
 	proteinList []Protein
 }
-
+*/
 func main() {
-	//Creating empty cell structure
-	cell := CreateCell()
+	/*
+		//Creating empty cell structure
+		cell := CreateCell()
 
-	//reading the code and create protein
-	var filename = "field.txt"
-	code := ReadCode(filename)
-	fmt.Println(ConvertToProtein(cell, code))
-
+		//reading the code and create protein
+		var filename = "field.txt"
+		code := ReadCode(filename)
+		fmt.Println(ConvertToProtein(cell, code))
+	*/
 }
 
+/*
 //CreateCell create the Cell structure, this will be the space where protein interacts.
 func CreateCell() Cell {
 	var cell Cell
@@ -88,7 +91,7 @@ func ConvertToProtein(cell Cell, code string) (Protein, Cell) {
 
 func DetectOperator(code string) (string, string, int, string) {
 	var splitCode []string = strings.Split(code, " ")
-	/*
+
 		  if splitCode[1] == "=" {
 
 					    switch splitCode[3] {
@@ -108,7 +111,7 @@ func DetectOperator(code string) (string, string, int, string) {
 
 			}
 			panic("Panic?")
-	*/
+
 	//convert the splitCode[2] to integer, if it is number, then return the numbe
 	//if it is not number, then return the string of the protein name
 	dataType := ""
@@ -129,6 +132,7 @@ func CreateProtein(name string, number int) Protein {
 	var p Protein
 	p.label = name
 	p.chTree = number
+
 	return p
 }
 
@@ -148,3 +152,4 @@ func BindToProtein(name, proteinName string, cell Cell) (Protein, Cell) {
 	cell.proteinList[num] = tmpProtein
 	return tmpProtein, cell
 }
+*/
