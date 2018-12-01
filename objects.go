@@ -3,8 +3,9 @@ package main
 //Vesicle is the object of our function
 type Vesicle struct {
 	name         string
+	vesicleType  string
 	proteinList  []*Protein
-	receptorList []*Receptor
+	receptorList []*Protein
 }
 
 //Protein is abstract parent object for all types of proteins
@@ -56,19 +57,62 @@ type Substrate struct {
 	phosphoStatus bool
 }
 
-func (vesicle *Vesicle) TakeInProtein() {
-
+//TakeInProtein add protein to proteinList if it could be recognized by the receptor
+func (vesicle *Vesicle) TakeInProtein(protein Protein) {
+	exist := false
+	if vesicle.receptorList != nil {
+		for _, otherProtein := range vesicle.receptorList {
+			if protein.name == (*otherProtein).name {
+				exist = true
+			}
+		}
+		if exist {
+			if vesicle.proteinList != nil {
+				vesicle.proteinList = append(vesicle.proteinList, &protein)
+			} else {
+				vesicle.proteinList = make([]*Protein, 0)
+				vesicle.proteinList = append(vesicle.proteinList, &protein)
+			}
+		}
+	} else {
+		panic("receptor list is empty!!")
+	}
 }
 
-func (vesicle *Vesicle) PumpOutProtein() {
-
+//PumpOutProtein remove the protein from proteinList
+func (vesicle *Vesicle) PumpOutProtein(protein Protein) {
+	if vesicle.proteinList != nil {
+		for number, theProtein := range vesicle.proteinList {
+			if theProtein.name == protein.name {
+				vesicle.RemoveFromProteinList(number)
+			}
+		}
+	} else {
+		panic("protein list is empty")
+	}
 }
 
-func (vesicle *Vesicle) DoReactionInside() {
-
+//RemoveFromProteinList delete the element from proteinList
+func (vesicle *Vesicle) RemoveFromProteinList(number int) {
+	vesicle.proteinList = append(vesicle.proteinList[:number], vesicle.proteinList[number+1:]...)
 }
 
-func (glucotrans *Glucotrans) TrnasferGlucose() {
+//DoReactionInside
+func (vesicle *Vesicle) DoReactionInside(number int) {
+	if vesicle.vesicleType == "WholeCell" {
+		//Haven't decide what to do here
+	} else if vesicle.vesicleType == "IfWhile" {
+
+	} else if vesicle.vesicleType == "Assignment" {
+		TransferGlucose(number)
+	} else if vesicle.vesicleType == "Condition" {
+
+	} else if vesicle.vesicleType == "Boolean" {
+
+	}
+}
+
+func (glucotrans *Glucotrans) TransferGlucose(number int) {
 
 }
 
