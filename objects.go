@@ -5,7 +5,7 @@ type Vesicle struct {
 	name         string
 	vesicleType  string
 	proteinList  []*Protein
-	receptorList []*Protein
+	receptorList []*Receptor
 }
 
 //Protein is abstract parent object for all types of proteins
@@ -62,9 +62,7 @@ func (vesicle *Vesicle) TakeInProtein(protein Protein) {
 	exist := false
 	if vesicle.receptorList != nil {
 		for _, otherProtein := range vesicle.receptorList {
-			if protein.name == (*otherProtein).name {
-				exist = true
-			}
+			exist = (*otherProtein).CheckProtein(protein.name)
 		}
 		if exist {
 			if vesicle.proteinList != nil {
@@ -97,14 +95,14 @@ func (vesicle *Vesicle) RemoveFromProteinList(number int) {
 	vesicle.proteinList = append(vesicle.proteinList[:number], vesicle.proteinList[number+1:]...)
 }
 
-//DoReactionInside
+//DoReactionInside  ****SKIPPED****
 func (vesicle *Vesicle) DoReactionInside(number int) {
 	if vesicle.vesicleType == "WholeCell" {
 		//Haven't decide what to do here
 	} else if vesicle.vesicleType == "IfWhile" {
 
 	} else if vesicle.vesicleType == "Assignment" {
-		TransferGlucose(number)
+
 	} else if vesicle.vesicleType == "Condition" {
 
 	} else if vesicle.vesicleType == "Boolean" {
@@ -112,42 +110,78 @@ func (vesicle *Vesicle) DoReactionInside(number int) {
 	}
 }
 
-func (glucotrans *Glucotrans) TransferGlucose(number int) {
-
+//TransferGlucose assign the number of substrate.glucoCount to number
+func (glucotrans *Glucotrans) TransferGlucose(substrate *Substrate, number int) {
+	(*substrate).glucoCount = number
 }
 
-func (receptor *Receptor) CheckProtein() {
-
+//CheckProtein check the name of protein and the receptor, if it matches to each
+//other, then return true, if not, return false
+func (receptor *Receptor) CheckProtein(proteinName string) bool {
+	if proteinName == (*receptor).name {
+		return true
+	}
+	return false
 }
 
-func (substrate *Substrate) IncreaseGlu() {
-
+//IncreaseGlu Increase the number of substrate.glucoCount to the number
+func (substrate *Substrate) IncreaseGlu(number int) {
+	for i := 0; i < number; i++ {
+		(*substrate).glucoCount++
+	}
 }
 
+//Phosphorylate assign the bool value true to the substrate.phosphoStatus
 func (substrate *Substrate) Phosphorylate() {
-
+	(*substrate).phosphoStatus = true
 }
 
-func (substrate *Substrate) CheckPhosphoStatus() {
-
+//DePhosphorylate assign the bool value false to the substrate.phosphoStatus
+func (substrate *Substrate) DePhosphorylate() {
+	(*substrate).phosphoStatus = false
 }
 
-func (substrate *Substrate) CheckGlucoNumber() {
-
+//CheckPhosphoStatus return whether the substrate is phosphorylated, which is true
+func (substrate *Substrate) CheckPhosphoStatus() bool {
+	if (*substrate).phosphoStatus == true {
+		return true
+	}
+	return false
 }
 
-func (ifKinase *IfKinase) CheckPhosphoStatus() {
-
+//CheckGlucoNumber check the number of glucose on substrate
+func (substrate *Substrate) CheckGlucoNumber() int {
+	return (*substrate).glucoCount
 }
 
-func (ifKinase *IfKinase) ActivateReceptor() {
-
+//CheckPhosphoStatus check the phosphoStatus of input substrate
+//if phosphorylated then return true
+func (ifKinase *IfKinase) CheckPhosphoStatus(substrate *Substrate) bool {
+	if (*substrate).phosphoStatus == true {
+		return true
+	}
+	return false
 }
 
-func (checkerKinase *CheckerKinase) CheckGluCount() {
-
+//ActivateReceptor set receptor.phosphoStatus true
+func (ifKinase *IfKinase) ActivateReceptor(receptor *Receptor) {
+	(*receptor).phosphoStatus = true
 }
 
-func (checkerKinase *CheckerKinase) AutophosphorylateStatue() {
+//CheckGluCount check the number of glucose on substrate
+//if the # of glucose == # of intput, return true
+func (checkerKinase *CheckerKinase) CheckGluCount(number int, substrate *Substrate) bool {
+	if (*substrate).glucoCount == number {
+		return true
+	}
+	return false
+}
 
+//AutophosphorylateStatus set the phosphostatus of substrate to true if input  true
+func (checkerKinase *CheckerKinase) AutophosphorylateStatus(substrate *Substrate, status bool) {
+	if status {
+		(*substrate).phosphoStatus = true
+	} else {
+		(*substrate).phosphoStatus = false
+	}
 }
