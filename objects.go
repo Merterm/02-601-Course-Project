@@ -1,11 +1,19 @@
 package main
 
+/* ----------------------------------------------------------------------------
+ProLANG Project
+Author: Ian Lee
+Date: 30 Nov 2018
+Description:
+-----------------------------------------------------------------------------*/
+
 //Vesicle is the object of our function
 type Vesicle struct {
 	name         string
 	vesicleType  string
 	proteinList  []*Protein
 	receptorList []*Receptor
+	vesicles     []*Vesicle
 }
 
 //Protein is abstract parent object for all types of proteins
@@ -55,6 +63,23 @@ type Substrate struct {
 	name          string
 	glucoCount    int
 	phosphoStatus bool
+}
+
+func (vesicle *Vesicle) InitializeVesicle() {
+	vesicle = new(Vesicle)
+	vesicle.proteinList = make([]*Protein, 0)
+	vesicle.receptorList = make([]*Receptor, 0)
+	vesicle.vesicles = make([]*Vesicle, 0)
+}
+
+func (vesicle *Vesicle) CopyVesicle(copiedVesicle *Vesicle) {
+	//Copy the trivial parameters
+	vesicle.name = copiedVesicle.name
+	vesicle.vesicleType = copiedVesicle.vesicleType
+
+	//Deep copy the lists !!!!!TODO!!!!!!!
+
+	//Call the same function for children vesicles !!!!!TODO!!!!!!!
 }
 
 //TakeInProtein add protein to proteinList if it could be recognized by the receptor
