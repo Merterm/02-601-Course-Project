@@ -31,7 +31,7 @@ type Kinase struct {
 //if autophosphorylationstatus then activate the receptor
 type IfKinase struct { //EVPSAK
 	Kinase
-	recetporName         string
+	receptorName         string
 	recognizeVesicleName string
 }
 
@@ -53,6 +53,7 @@ type Glucotrans struct {
 type Receptor struct {
 	Protein
 	phosphoStatus bool
+	locSignalRec  int //to recognize the localization signal on the substrate
 }
 
 //Substrate is a input protein, which is tagged with glucose and phospho group
@@ -60,6 +61,7 @@ type Substrate struct {
 	Protein
 	glucoCount    int
 	phosphoStatus bool
+	locSignal     int //this is to localize a protein to a specific vesicle
 }
 
 func (vesicle *Vesicle) InitializeVesicle() {
