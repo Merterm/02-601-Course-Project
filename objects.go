@@ -177,6 +177,7 @@ func (checkerKinase *CheckerKinase) AutophosphorylateStatus(substrate *Substrate
 //arithmetic and assignment use this object
 type Glucotrans struct {
 	Protein
+	glucoCount int
 }
 
 //TransferGlucose assign the number of substrate.glucoCount to number
