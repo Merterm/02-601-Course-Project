@@ -46,21 +46,18 @@ type CheckerKinase struct { //IVSK
 //arithmetic and assignment use this object
 type Glucotrans struct {
 	Protein
-	name string
 }
 
 //Receptor is a protein recognize the input protein and decide
 //whether it should be engulfed into the vesicle or not
 type Receptor struct {
 	Protein
-	name          string
 	phosphoStatus bool
 }
 
 //Substrate is a input protein, which is tagged with glucose and phospho group
 type Substrate struct {
 	Protein
-	name          string
 	glucoCount    int
 	phosphoStatus bool
 }
