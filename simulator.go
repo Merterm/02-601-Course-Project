@@ -37,7 +37,9 @@ func SimulateCell(cell *Vesicle, numIter int) CellBoard {
 }
 
 func AddSubstrates(cell *Vesicle) {
+	//Look for substrate proteins in all vesicles
 
+	//
 }
 
 func UpdateVesicle(vesicle *Vesicle) {

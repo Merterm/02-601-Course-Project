@@ -367,7 +367,7 @@ func Pop(arr []string) string {
 
 //PrintParseTree prints the parseTree in depth first search order.
 func PrintParseTree(parseTree ParseTree) {
-	for parseTree != nil {
+	for parseTree != nil { //!!!THIS IS WRONG!!!!!!
 		//Print the main node and call the print function for all the children
 		fmt.Println("Node: ", parseTree.name)
 		fmt.Println("Children: ")

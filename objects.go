@@ -198,8 +198,8 @@ type Receptor struct {
 
 //CheckProtein check the name of protein and the receptor, if it matches to each
 //other, then return true, if not, return false
-func (receptor *Receptor) CheckProtein(proteinName string) bool {
-	if proteinName == (*receptor).name {
+func (receptor *Receptor) CheckProtein(proteinName string, locSignal int) bool {
+	if proteinName == (*receptor).name && locSignal == receptor.locSignalRec {
 		return true
 	}
 	return false
