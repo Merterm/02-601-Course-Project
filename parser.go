@@ -22,6 +22,9 @@ import (
 															OBJECT DECLARATIONS
 ******************************************************************************/
 
+//CODE is a top level constant
+const CODE = "CODE"
+
 //ParseTree is the header pointer to the parse tree
 type ParseTree *Node
 
@@ -91,12 +94,12 @@ func ParseCode(codeArr []string, ptr *Node) bool {
 	if ptr == nil {
 		//Create a Code node
 		codeNode := new(Node)
-		codeNode.name = "CODE"
+		codeNode.name = CODE
 		ptr = codeNode
-	} else if ptr.name != "CODE" {
+	} else if ptr.name != CODE {
 		//Create a Code node
 		codeNode := new(Node)
-		codeNode.name = "CODE"
+		codeNode.name = CODE
 		ptr.children = append(ptr.children, codeNode)
 	}
 
@@ -365,9 +368,10 @@ func Pop(arr []string) string {
 	return val
 }
 
+//!!!THIS IS WRONG!!!!!!
 //PrintParseTree prints the parseTree in depth first search order.
 func PrintParseTree(parseTree ParseTree) {
-	for parseTree != nil { //!!!THIS IS WRONG!!!!!!
+	for parseTree != nil {
 		//Print the main node and call the print function for all the children
 		fmt.Println("Node: ", parseTree.name)
 		fmt.Println("Children: ")
