@@ -52,10 +52,6 @@ func TreeTraversal(parseTree ParseTree) *Vesicle {
 	return vesicle
 }
 
-func GenerateVesicle() {
-
-}
-
 //GenerateProtein create the basic vesicle in the last two level
 func GenerateProtein(parseTree ParseTree) *Vesicle {
 	var receptor *Receptor
