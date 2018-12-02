@@ -39,7 +39,7 @@ func (vesicle *Vesicle) CopyVesicle(copiedVesicle *Vesicle) {
 
 //TakeInProtein add protein to proteinList if it could be recognized by the
 //receptor
-func (vesicle *Vesicle) TakeInProtein(protein Protein) {
+func (vesicle *Vesicle) TakeInProtein(protein *Protein) {
 	exist := false
 	if vesicle.receptorList != nil {
 		for _, otherProtein := range vesicle.receptorList {
@@ -47,10 +47,10 @@ func (vesicle *Vesicle) TakeInProtein(protein Protein) {
 		}
 		if exist {
 			if vesicle.proteinList != nil {
-				vesicle.proteinList = append(vesicle.proteinList, &protein)
+				vesicle.proteinList = append(vesicle.proteinList, protein)
 			} else {
 				vesicle.proteinList = make([]*Protein, 0)
-				vesicle.proteinList = append(vesicle.proteinList, &protein)
+				vesicle.proteinList = append(vesicle.proteinList, protein)
 			}
 		}
 	} else {
@@ -58,8 +58,9 @@ func (vesicle *Vesicle) TakeInProtein(protein Protein) {
 	}
 }
 
+//!!!!!!!!!!! TODO !!!! Need to return a pointer to protein and increment its locSignal
 //PumpOutProtein remove the protein from proteinList
-func (vesicle *Vesicle) PumpOutProtein(protein Protein) {
+func (vesicle *Vesicle) PumpOutProtein(protein *Protein) {
 	if vesicle.proteinList != nil {
 		for number, theProtein := range vesicle.proteinList {
 			if theProtein.name == protein.name {
@@ -78,7 +79,7 @@ func (vesicle *Vesicle) RemoveFromProteinList(number int) {
 }
 
 //DoReactionInside  ****SKIPPED****
-func (vesicle *Vesicle) DoReactionInside(number int) {
+func (vesicle *Vesicle) DoReactionInside() {
 	if vesicle.vesicleType == "WholeCell" {
 		//Haven't decide what to do here
 	} else if vesicle.vesicleType == "IfWhile" {
@@ -112,7 +113,7 @@ type Kinase struct {
 }
 
 /******************************************************************************
-																IFKINASE OBJECT
+																IF-KINASE OBJECT
 ******************************************************************************/
 
 //IfKinase is a kinase check the recognizeVesicle
@@ -138,7 +139,7 @@ func (ifKinase *IfKinase) ActivateReceptor(receptor *Receptor) {
 }
 
 /******************************************************************************
-															CHECKERKINASE OBJECT
+															CHECKER-KINASE OBJECT
 ******************************************************************************/
 
 //CheckerKinase is a kinase check the glucoCount of two input protein
@@ -216,6 +217,13 @@ type Substrate struct {
 	glucoCount    int
 	phosphoStatus bool
 	locSignal     int //this is to localize a protein to a specific vesicle
+}
+
+func (substrate *Substrate) InitializeSubstrate(name string) {
+	substrate = new(Substrate)
+	substrate.name = name
+	substrate.locSignal = 0
+	substrate.glucoCount = 0
 }
 
 //IncreaseGlu Increase the number of substrate.glucoCount to the number

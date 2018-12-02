@@ -37,11 +37,67 @@ func SimulateCell(cell *Vesicle, numIter int) CellBoard {
 }
 
 func AddSubstrates(cell *Vesicle) {
-	//Look for substrate proteins in all vesicles
+	//initialize arrays
+	substrates := make([]string, 0)
+	vesicles := make([]*Vesicle, 0)
+	vesicles = append(vesicles, cell)
 
-	//
+	//Look for substrate proteins in all vesicles
+	for len(vesicles) != 0 {
+		vesicle := PopVesicle(vesicles)
+		for _, receptor := range vesicle.receptorList {
+			name := receptor.name
+			if !InList(name, substrates) {
+				substrates = append(substrates, name)
+			}
+		}
+		for _, inrVesicle := range vesicle.vesicles {
+			vesicles = append(vesicles, inrVesicle)
+		}
+	}
+
+	//Add substrates to cell
+	for _, substrate := range substrates {
+		//Create new substrate object
+		var substrateProtein *Substrate
+		substrateProtein.InitializeSubstrate(substrate)
+
+		//Put the substrate into cell
+		cell.proteinList = append(cell.proteinList, substrateProtein)
+	}
 }
 
 func UpdateVesicle(vesicle *Vesicle) {
+	for _, inrVesicle := range vesicle.vesicles {
+		for _, substrate := range vesicle.proteinList {
+			//Take in the protein if possible
+			inrVesicle.TakeInProtein(substrate)
+		}
+		//Do the reaction
+		inrVesicle.DoReactionInside()
 
+		//Get the processed protein out
+		for _, substrate := range inrVesicle.proteinList { //Most probably it will try to pump out the integral proteins as well, so need to revise this
+			inrVesicle.PumpOutProtein(substrate)
+		}
+
+		//Do it recursively for the children vesicles
+		UpdateVesicle(inrVesicle)
+	}
+}
+
+//Pop deletes the initial element of the arr and returns it
+func PopVesicle(vesicles []*Vesicle) *Vesicle {
+	vesicle := vesicles[0]
+	vesicles = append(vesicles[:0], vesicles[1:]...)
+	return vesicle
+}
+
+func InList(name string, arr []string) bool {
+	for i := 0; i < len(arr); i++ {
+		if arr[i] == name {
+			return true
+		}
+	}
+	return false
 }
