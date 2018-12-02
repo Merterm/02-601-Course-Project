@@ -113,7 +113,7 @@ type Kinase struct {
 }
 
 /******************************************************************************
-																IFKINASE OBJECT
+																IF-KINASE OBJECT
 ******************************************************************************/
 
 //IfKinase is a kinase check the recognizeVesicle
@@ -139,7 +139,7 @@ func (ifKinase *IfKinase) ActivateReceptor(receptor *Receptor) {
 }
 
 /******************************************************************************
-															CHECKERKINASE OBJECT
+															CHECKER-KINASE OBJECT
 ******************************************************************************/
 
 //CheckerKinase is a kinase check the glucoCount of two input protein
