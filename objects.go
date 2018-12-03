@@ -2,7 +2,7 @@ package main
 
 /* ----------------------------------------------------------------------------
 ProLANG Project
-Author: Ian Lee
+Author: Ian Lee & Mert Inan
 Date: 30 Nov 2018
 Description:
 -----------------------------------------------------------------------------*/
@@ -23,11 +23,12 @@ type Vesicle struct {
 	vesicles      []*Vesicle
 }
 
-func (vesicle *Vesicle) InitializeVesicle() {
+func InitializeVesicle(vesicle *Vesicle) *Vesicle {
 	vesicle = new(Vesicle)
 	vesicle.substrateList = make([]*Substrate, 0)
 	vesicle.receptorList = make([]*Receptor, 0)
 	vesicle.vesicles = make([]*Vesicle, 0)
+	return vesicle
 }
 
 func (vesicle *Vesicle) CopyVesicle(copiedVesicle *Vesicle) {
@@ -46,7 +47,10 @@ func (vesicle *Vesicle) TakeInProtein(substrate *Substrate) {
 	exist := false
 	if vesicle.receptorList != nil {
 		for _, otherProtein := range vesicle.receptorList {
-			exist = (*otherProtein).CheckProtein(substrate.name, substrate.locSignal)
+			//Check that the receptor is active
+			if otherProtein.CheckPhosphoStatus() {
+				exist = (*otherProtein).CheckProtein(substrate.name, substrate.locSignal)
+			}
 		}
 		if exist {
 			if vesicle.substrateList != nil {
@@ -59,6 +63,11 @@ func (vesicle *Vesicle) TakeInProtein(substrate *Substrate) {
 	} else {
 		panic("receptor list is empty!!")
 	}
+}
+
+//AddReceptor adds the given receptor pointer to the vesicle's receptors
+func (vesicle *Vesicle) AddReceptor(receptor *Receptor) {
+	vesicle.receptorList = append(vesicle.receptorList, receptor)
 }
 
 //!!!!!!!!!!! TODO !!!! Need to return a pointer to protein and increment its locSignal
@@ -81,19 +90,140 @@ func (vesicle *Vesicle) RemoveFromProteinList(number int) {
 		vesicle.substrateList[number+1:]...)
 }
 
-//DoReactionInside  ****SKIPPED****
+//DoReactionInside
 func (vesicle *Vesicle) DoReactionInside() {
-	if vesicle.vesicleType == "WholeCell" {
-		//Haven't decide what to do here
-	} else if vesicle.vesicleType == "IfWhile" {
-
-	} else if vesicle.vesicleType == "Assignment" {
-
-	} else if vesicle.vesicleType == "Condition" {
-
-	} else if vesicle.vesicleType == "Boolean" {
-
+	if vesicle.vesicleType == IF {
+		vesicle.DoIfReaction()
+	} else if vesicle.vesicleType == WHILE {
+		vesicle.DoWhileReaction()
+	} else if vesicle.vesicleType == ASSIGN {
+		vesicle.DoAssignmentReaction()
+	} else if vesicle.vesicleType == COND {
+		vesicle.DoConditionalReaction()
+	} else if vesicle.vesicleType == ARTH {
+		vesicle.DoArithmeticReaction()
 	}
+
+	//else if vesicle.vesicleType == "Boolean" { !!!!!! TODO !!!!!!!!
+	//
+	//}
+}
+
+func (vesicle *Vesicle) DoIfReaction() {
+	//Check that vesicle has if kinase
+	if vesicle.ifKinase != nil {
+		//Check that there are two inner vesicles
+		if len(vesicle.vesicles) == 2 {
+			//Check that one of the inner vesicle is a conditional vesicle
+			var condVesicle *Vesicle
+			var nonCondVesicle *Vesicle
+			for _, inrVesicle := range vesicle.vesicles {
+				if inrVesicle.name == COND {
+					condVesicle = inrVesicle
+				} else {
+					nonCondVesicle = inrVesicle
+				}
+			}
+
+			if condVesicle != nil {
+				//Inactivate the receptors of non-conditional vesicle
+				for _, receptor := range nonCondVesicle.receptorList {
+					receptor.Inactivate()
+				}
+
+				//If phosphorylated, then activate the receptors of the other vesicle.
+				if condVesicle.checkerKinase.GetPhosphoStatus() {
+					//Inactivate the receptors of non-conditional vesicle
+					for _, receptor := range nonCondVesicle.receptorList {
+						receptor.Activate()
+					}
+				}
+			}
+			panic("There is no conditional vesicle inside")
+		}
+		panic("There are not enough vesicles inside!")
+	}
+	panic("There is no if kinase to carry out if reaction!")
+}
+
+func (vesicle *Vesicle) DoWhileReaction() {
+	//Check that vesicle has if kinase
+	if vesicle.ifKinase != nil {
+		//Check that there are two inner vesicles
+		if len(vesicle.vesicles) == 2 {
+			//Check that one of the inner vesicle is a conditional vesicle
+			var condVesicle *Vesicle
+			var nonCondVesicle *Vesicle
+			for _, inrVesicle := range vesicle.vesicles {
+				if inrVesicle.name == COND {
+					condVesicle = inrVesicle
+				} else {
+					nonCondVesicle = inrVesicle
+				}
+			}
+
+			if condVesicle != nil {
+				//Inactivate the receptors of non-conditional vesicle
+				for _, receptor := range nonCondVesicle.receptorList {
+					receptor.Inactivate()
+				}
+
+				//If phosphorylated, then activate the receptors of the other vesicle.
+				if condVesicle.checkerKinase.GetPhosphoStatus() {
+					//Inactivate the receptors of non-conditional vesicle
+					for _, receptor := range nonCondVesicle.receptorList {
+						receptor.Activate()
+					}
+				} // !!!!!!!! TODO !!!! YOU HAVE TO CHANGE THE LOCSIGNAL (DECREMENT MAYBE)
+			}
+			panic("There is no conditional vesicle inside")
+		}
+		panic("There are not enough vesicles inside!")
+	}
+	panic("There is no if kinase to carry out while reaction!")
+}
+
+func (vesicle *Vesicle) DoAssignmentReaction() {
+	//Check that there is a glucosyltransferase
+	if vesicle.glucoTrans != nil {
+		//for each substrate, call transferGlucose
+		for _, substrate := range vesicle.substrateList {
+			vesicle.glucoTrans.TransferGlucose(substrate)
+		}
+	}
+	panic("No glucosyltransferase to do assignment reaction!")
+}
+
+func (vesicle *Vesicle) DoConditionalReaction() {
+	//Check that there is a checker kinase
+	if vesicle.checkerKinase != nil {
+		//Check that there are two substrates in the list. Otherwise no comparison
+		//can be done
+		if len(vesicle.substrateList) == 2 {
+			//Initialize the two substrates
+			substrate1 := vesicle.substrateList[0]
+			substrate2 := vesicle.substrateList[1]
+			//Check the glucoCount
+			phospho := vesicle.checkerKinase.CheckGlucoCount(substrate1, substrate2)
+			//Autophosphorylate
+			if phospho {
+				vesicle.checkerKinase.SetPhosphoStatus(true)
+			} else {
+				vesicle.checkerKinase.SetPhosphoStatus(false)
+			}
+		}
+	}
+}
+
+func (vesicle *Vesicle) DoArithmeticReaction() {
+	//Check that there is a glucosyltransferase
+	if vesicle.glucoTrans != nil {
+		//for each substrate, call transferGlucose
+		for _, substrate := range vesicle.substrateList {
+			vesicle.glucoTrans.TransferGlucose(substrate)
+		}
+	}
+	panic("No glucosyltransferase to do arithmetic reaction!")
 }
 
 /******************************************************************************
@@ -145,32 +275,65 @@ func (ifKinase *IfKinase) ActivateReceptor(receptor *Receptor) {
 															CHECKER-KINASE OBJECT
 ******************************************************************************/
 
-//CheckerKinase is a kinase check the glucoCount of two input protein
+//CheckerKinase is a kinase that checks the glucoCount of two input protein
 //if it's the same, phosphoStatus is true
 type CheckerKinase struct { //IVSK
 	Kinase
+	checkerType   string
 	phosphoStatus bool
 }
 
-//CheckGluCount check the number of glucose on substrate
-//if the # of glucose == # of intput, return true
-func (checkerKinase *CheckerKinase) CheckGluCount(number int,
-	substrate *Substrate) bool {
-	if (*substrate).glucoCount == number {
-		return true
+//CheckGluCount checks the number of glucose on substrate
+//if the # of glucose == # of input, return true
+func (checkerKinase *CheckerKinase) CheckGlucoCount(substrate1 *Substrate,
+	substrate2 *Substrate) bool {
+	//Check the type of the transferase first and return tru accordingly
+	if checkerKinase.checkerType == ">" {
+		if substrate1.glucoCount > substrate2.glucoCount {
+			return true
+		}
+		return false
+	} else if checkerKinase.checkerType == "<" {
+		if substrate1.glucoCount < substrate2.glucoCount {
+			return true
+		}
+		return false
+	} else if checkerKinase.checkerType == "<=" {
+		if substrate1.glucoCount <= substrate2.glucoCount {
+			return true
+		}
+		return false
+	} else if checkerKinase.checkerType == ">=" {
+		if substrate1.glucoCount >= substrate2.glucoCount {
+			return true
+		}
+		return false
+	} else if checkerKinase.checkerType == "!=" {
+		if substrate1.glucoCount != substrate2.glucoCount {
+			return true
+		}
+		return false
+	} else if checkerKinase.checkerType == "==" {
+		if substrate1.glucoCount == substrate2.glucoCount {
+			return true
+		}
+		return false
 	}
 	return false
 }
 
 //AutophosphorylateStatus set the phosphostatus of substrate to true if input
 //true
-func (checkerKinase *CheckerKinase) AutophosphorylateStatus(substrate *Substrate,
-	status bool) {
+func (checkerKinase *CheckerKinase) SetPhosphoStatus(status bool) {
 	if status {
-		(*substrate).phosphoStatus = true
+		checkerKinase.phosphoStatus = true
 	} else {
-		(*substrate).phosphoStatus = false
+		checkerKinase.phosphoStatus = false
 	}
+}
+
+func (checkerKinase *CheckerKinase) GetPhosphoStatus() bool {
+	return checkerKinase.phosphoStatus
 }
 
 /******************************************************************************
@@ -184,9 +347,10 @@ type Glucotrans struct {
 	glucoCount int
 }
 
-//TransferGlucose assign the number of substrate.glucoCount to number
-func (glucotrans *Glucotrans) TransferGlucose(substrate *Substrate, number int) {
-	(*substrate).glucoCount = number
+//TransferGlucose assign the number of substrate.glucoCount to the internal
+//number that glucotrans has
+func (glucotrans *Glucotrans) TransferGlucose(substrate *Substrate) {
+	substrate.IncreaseGlu(glucotrans.glucoCount)
 }
 
 /******************************************************************************
@@ -201,6 +365,17 @@ type Receptor struct {
 	locSignalRec  int //to recognize the localization signal on the substrate
 }
 
+func InitializeReceptor(receptor *Receptor, name string) *Receptor {
+	receptor = new(Receptor)
+	receptor.name = name
+	receptor.phosphoStatus = true
+	return receptor
+}
+
+func (receptor *Receptor) CheckPhosphoStatus() bool {
+	return receptor.phosphoStatus
+}
+
 //CheckProtein check the name of protein and the receptor, if it matches to each
 //other, then return true, if not, return false
 func (receptor *Receptor) CheckProtein(proteinName string, locSignal int) bool {
@@ -208,6 +383,14 @@ func (receptor *Receptor) CheckProtein(proteinName string, locSignal int) bool {
 		return true
 	}
 	return false
+}
+
+func (receptor *Receptor) Inactivate() {
+	receptor.phosphoStatus = false
+}
+
+func (receptor *Receptor) Activate() {
+	receptor.phosphoStatus = true
 }
 
 /******************************************************************************
@@ -222,18 +405,17 @@ type Substrate struct {
 	locSignal     int //this is to localize a protein to a specific vesicle
 }
 
-func (substrate *Substrate) InitializeSubstrate(name string) {
+func InitializeSubstrate(substrate *Substrate, name string) *Substrate {
 	substrate = new(Substrate)
 	substrate.name = name
 	substrate.locSignal = 0
 	substrate.glucoCount = 0
+	return substrate
 }
 
 //IncreaseGlu Increase the number of substrate.glucoCount to the number
 func (substrate *Substrate) IncreaseGlu(number int) {
-	for i := 0; i < number; i++ {
-		(*substrate).glucoCount++
-	}
+	(*substrate).glucoCount += number
 }
 
 //Phosphorylate assign the bool value true to the substrate.phosphoStatus

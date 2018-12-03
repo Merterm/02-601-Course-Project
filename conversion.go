@@ -93,7 +93,7 @@ func TreeTraversal(parseTree ParseTree) *Vesicle {
 func GenerateProtein(parseTree ParseTree) *Vesicle {
 	receptor := new(Receptor)
 	vesicle := new(Vesicle)
-	vesicle.InitializeVesicle()
+	vesicle = InitializeVesicle(vesicle)
 
 	for i := 0; i < len((*parseTree).children); i++ {
 
@@ -103,6 +103,7 @@ func GenerateProtein(parseTree ParseTree) *Vesicle {
 
 			(*receptor).name = (*parseTree.children[0]).name
 			(*checkerKinase).name = (*parseTree.children[1]).name
+			(*checkerKinase).checkerType = (*parseTree.children[1]).name
 			(*receptor2).name = (*parseTree.children[2]).name
 
 			//vesicle.proteinList = append(vesicle.proteinList, checkerKinase)
@@ -126,10 +127,10 @@ func GenerateProtein(parseTree ParseTree) *Vesicle {
 			vesicle.receptorList = append(vesicle.receptorList, receptor)
 			vesicle.vesicleType = ARTH
 
-		} else if parseTree.name == ASSIGN {
+		} else if parseTree.name == ASSIGN { //!!!!!! TODO !!!!!! CAN BE BOOLEAN INSTEAD OF NUM
 			glucotrans := new(Glucotrans)
 			(*receptor).name = (*parseTree.children[1]).name
-			number, _ := strconv.Atoi((*parseTree.children[0]).name)
+			number, _ := strconv.Atoi((*parseTree.children[0]).name) // !!!! NEEED TO CHECK FOR ERROR!!!!!!
 			(*glucotrans).glucoCount = number
 			vesicle.glucoTrans = glucotrans
 			vesicle.receptorList = append(vesicle.receptorList, receptor)
