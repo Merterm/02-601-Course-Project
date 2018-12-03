@@ -47,7 +47,13 @@ func DrawVesicle(vesicle *Vesicle, vesicleDepth int) {
 }
 
 //CombineCanvas combine the Casvas horizontally
-func CombineCanvas() {
+func CombineCanvas(canvasArray []Canvas, vesicleDepth int) {
+	canvasLength := vesicleDepth
+	var canvasWidth int
+	for i := 0; i < len(canvasArray); i++ {
+		canvasWidth += numCol(canvasArray[i])
+
+	}
 
 }
 
