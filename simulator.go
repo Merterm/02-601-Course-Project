@@ -63,13 +63,13 @@ func AddSubstrates(cell *Vesicle) {
 		substrateProtein.InitializeSubstrate(substrate)
 
 		//Put the substrate into cell
-		cell.proteinList = append(cell.proteinList, substrateProtein)
+		//cell.proteinList = append(cell.proteinList, substrateProtein) HEEEEEEEERRRRRRRREEEEEEEE
 	}
 }
 
 func UpdateVesicle(vesicle *Vesicle) {
 	for _, inrVesicle := range vesicle.vesicles {
-		for _, substrate := range vesicle.proteinList {
+		for _, substrate := range vesicle.substrateList {
 			//Take in the protein if possible
 			inrVesicle.TakeInProtein(substrate)
 		}
@@ -77,7 +77,7 @@ func UpdateVesicle(vesicle *Vesicle) {
 		inrVesicle.DoReactionInside()
 
 		//Get the processed protein out
-		for _, substrate := range inrVesicle.proteinList { //Most probably it will try to pump out the integral proteins as well, so need to revise this
+		for _, substrate := range inrVesicle.substrateList {
 			inrVesicle.PumpOutProtein(substrate)
 		}
 

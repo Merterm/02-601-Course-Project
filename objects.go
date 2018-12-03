@@ -13,16 +13,19 @@ Description:
 
 //Vesicle is the object of our function
 type Vesicle struct {
-	name         string
-	vesicleType  string
-	proteinList  []*Protein
-	receptorList []*Receptor
-	vesicles     []*Vesicle
+	name          string
+	vesicleType   string
+	substrateList []*Substrate
+	receptorList  []*Receptor
+	ifKinase      *IfKinase
+	checkerKinase *CheckerKinase
+	glucoTrans    *Glucotrans
+	vesicles      []*Vesicle
 }
 
 func (vesicle *Vesicle) InitializeVesicle() {
 	vesicle = new(Vesicle)
-	vesicle.proteinList = make([]*Protein, 0)
+	vesicle.substrateList = make([]*Substrate, 0)
 	vesicle.receptorList = make([]*Receptor, 0)
 	vesicle.vesicles = make([]*Vesicle, 0)
 }
@@ -39,18 +42,18 @@ func (vesicle *Vesicle) CopyVesicle(copiedVesicle *Vesicle) {
 
 //TakeInProtein add protein to proteinList if it could be recognized by the
 //receptor
-func (vesicle *Vesicle) TakeInProtein(protein *Protein) {
+func (vesicle *Vesicle) TakeInProtein(substrate *Substrate) {
 	exist := false
 	if vesicle.receptorList != nil {
 		for _, otherProtein := range vesicle.receptorList {
-			exist = (*otherProtein).CheckProtein(protein.name)
+			exist = (*otherProtein).CheckProtein(substrate.name, substrate.locSignal)
 		}
 		if exist {
-			if vesicle.proteinList != nil {
-				vesicle.proteinList = append(vesicle.proteinList, protein)
+			if vesicle.substrateList != nil {
+				vesicle.substrateList = append(vesicle.substrateList, substrate)
 			} else {
-				vesicle.proteinList = make([]*Protein, 0)
-				vesicle.proteinList = append(vesicle.proteinList, protein)
+				vesicle.substrateList = make([]*Substrate, 0)
+				vesicle.substrateList = append(vesicle.substrateList, substrate)
 			}
 		}
 	} else {
@@ -60,10 +63,10 @@ func (vesicle *Vesicle) TakeInProtein(protein *Protein) {
 
 //!!!!!!!!!!! TODO !!!! Need to return a pointer to protein and increment its locSignal
 //PumpOutProtein remove the protein from proteinList
-func (vesicle *Vesicle) PumpOutProtein(protein *Protein) {
-	if vesicle.proteinList != nil {
-		for number, theProtein := range vesicle.proteinList {
-			if theProtein.name == protein.name {
+func (vesicle *Vesicle) PumpOutProtein(substrate *Substrate) {
+	if vesicle.substrateList != nil {
+		for number, theProtein := range vesicle.substrateList {
+			if theProtein.name == substrate.name {
 				vesicle.RemoveFromProteinList(number)
 			}
 		}
@@ -74,8 +77,8 @@ func (vesicle *Vesicle) PumpOutProtein(protein *Protein) {
 
 //RemoveFromProteinList delete the element from proteinList
 func (vesicle *Vesicle) RemoveFromProteinList(number int) {
-	vesicle.proteinList = append(vesicle.proteinList[:number],
-		vesicle.proteinList[number+1:]...)
+	vesicle.substrateList = append(vesicle.substrateList[:number],
+		vesicle.substrateList[number+1:]...)
 }
 
 //DoReactionInside  ****SKIPPED****
