@@ -1,9 +1,31 @@
 package main
 
+/* ----------------------------------------------------------------------------
+ProLANG Project
+Author: Ian Lee
+Date: 30 Nov 2018
+Description:
+-----------------------------------------------------------------------------*/
+
 import (
 	"fmt"
 	"strconv"
 )
+
+//IF is a constant for if statements
+const IF string = "IF"
+
+//WHILE is a constant for while statements
+const WHILE string = "WHILE"
+
+//COND is a constant for conditional statements
+const COND string = "COND"
+
+//ASSIGN is a constant for assignment statements
+const ASSIGN string = "ASSIGN"
+
+//ARTH is a constant for arithmetic statements
+const ARTH string = "ARTH"
 
 //TreeTraversal visit every node in the tree and return the *Vesicle
 //Create a vesicle for each iteration
@@ -40,20 +62,22 @@ func TreeTraversal(parseTree ParseTree) *Vesicle {
 					}
 
 					vesicle.vesicles = append(vesicle.vesicles, childvesicle)
-					if parseTree.name == "IF" {
+					if parseTree.name == IF {
 						ifKinase := new(IfKinase)
 						//the receptorName will be the "code"
 						ifKinase.receptorName = parseTree.children[1].name
 						//the recognizeVesicleName will be the first one(condition)
 						ifKinase.recognizeVesicleName = parseTree.children[0].name
 						vesicle.ifKinase = ifKinase
-					} else if parseTree.name == "WHILE" {
+						vesicle.vesicleType = IF
+					} else if parseTree.name == WHILE {
 						ifKinase := new(IfKinase)
 						//the receptorName will be the "code"
 						ifKinase.receptorName = parseTree.children[1].name
 						//the recognizeVesicleName will be the first one(condition)
 						ifKinase.recognizeVesicleName = parseTree.children[0].name
 						vesicle.ifKinase = ifKinase
+						vesicle.vesicleType = WHILE
 						//// TODO: how to add label for the while loop???????
 					}
 
@@ -73,7 +97,7 @@ func GenerateProtein(parseTree ParseTree) *Vesicle {
 
 	for i := 0; i < len((*parseTree).children); i++ {
 
-		if parseTree.name == "COND" {
+		if parseTree.name == COND {
 			checkerKinase := new(CheckerKinase)
 			receptor2 := new(Receptor)
 
@@ -85,8 +109,9 @@ func GenerateProtein(parseTree ParseTree) *Vesicle {
 			vesicle.receptorList = make([]*Receptor, 0)
 			vesicle.receptorList = append(vesicle.receptorList, receptor)
 			vesicle.receptorList = append(vesicle.receptorList, receptor2)
+			vesicle.vesicleType = COND
 
-		} else if parseTree.name == "ARTH" {
+		} else if parseTree.name == ARTH {
 			glucotrans := new(Glucotrans)
 
 			(*receptor).name = (*parseTree.children[0]).name
@@ -99,14 +124,17 @@ func GenerateProtein(parseTree ParseTree) *Vesicle {
 			vesicle.receptorList = make([]*Receptor, 0)
 			vesicle.glucoTrans = glucotrans
 			vesicle.receptorList = append(vesicle.receptorList, receptor)
+			vesicle.vesicleType = ARTH
 
-		} else if parseTree.name == "ASSIGN" {
+		} else if parseTree.name == ASSIGN {
 			glucotrans := new(Glucotrans)
 			(*receptor).name = (*parseTree.children[1]).name
 			number, _ := strconv.Atoi((*parseTree.children[0]).name)
 			(*glucotrans).glucoCount = number
 			vesicle.glucoTrans = glucotrans
 			vesicle.receptorList = append(vesicle.receptorList, receptor)
+			vesicle.vesicleType = ASSIGN
+
 		}
 	}
 	return vesicle
