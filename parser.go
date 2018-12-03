@@ -116,13 +116,10 @@ func ParseCode(codeArr []string, ptr ParseTree) ([]string, bool) {
 	//Check the first element and call the relevant function
 	err := false
 	if codeArr[0] == "while" {
-		fmt.Println("inside while")
 		codeArr, err = ParseWhile(codeArr, ptr)
 	} else if codeArr[0] == "if" {
-		fmt.Println("inside if")
 		codeArr, err = ParseIf(codeArr, ptr)
 	} else if codeArr[1] == "=" {
-		fmt.Println("inside arith")
 		codeArr, err = ParseArithmetic(codeArr, ptr)
 	} else if codeArr[1] == ":=" {
 		codeArr, err = ParseAssign(codeArr, ptr)
@@ -131,7 +128,7 @@ func ParseCode(codeArr []string, ptr ParseTree) ([]string, bool) {
 	}
 
 	//Call the code function again on the remaining code
-	if len(codeArr) != 0 {
+	if len(codeArr) != 0 && !err {
 		codeArr, _ = ParseCode(codeArr, ptr)
 	}
 
@@ -173,13 +170,14 @@ func ParseWhile(codeArr []string, ptr *Node) ([]string, bool) {
 	j := 0
 	stmt := make([]string, 0)
 	bracketCnt := 1
-	for (codeArr[j] != "}" || bracketCnt != 0) && j < len(codeArr) {
+	for (codeArr[j] != "}" || bracketCnt != 1) && j < len(codeArr) {
 		if codeArr[j] == "{" {
 			bracketCnt++
 		}
 		if codeArr[j] == "}" {
 			bracketCnt--
 		}
+
 		var val string
 		codeArr, val = Pop(codeArr)
 		stmt = append(stmt, val)
@@ -267,7 +265,14 @@ func ParseIf(codeArr []string, ptr *Node) ([]string, bool) {
 	//Read until you see a } and put it into stmt
 	j := 0
 	stmt := make([]string, 0)
-	for codeArr[j] != "}" {
+	bracketCnt := 1
+	for (codeArr[j] != "}" || bracketCnt != 1) && j < len(codeArr) {
+		if codeArr[j] == "{" {
+			bracketCnt++
+		}
+		if codeArr[j] == "}" {
+			bracketCnt--
+		}
 		var val string
 		codeArr, val = Pop(codeArr)
 		stmt = append(stmt, val)
