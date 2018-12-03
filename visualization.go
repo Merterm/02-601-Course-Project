@@ -1,41 +1,58 @@
 package main
 
-//DrawTheCell
+//DrawTheCell includes following steps
 //1. draw the leaves
 //2. combine the child if they are from same node and draw the line
-
 func DrawTheCell(vesicle *Vesicle) {
 	vesicleDepth := MeasureDepth(vesicle)
+
 	if vesicle != nil {
 		for _, childVesicle := range vesicle.vesicles {
 			if childVesicle.vesicles == nil {
-				DrawLeaves(vesicle)
+				DrawLeafVesicle(vesicle, vesicleDepth)
 			} else {
-				DrawVesicle(vesicle)
+				DrawVesicle(vesicle, vesicleDepth)
 
 			}
 		}
 	}
 }
 
-func DrawLeaves(vesicle *Vesicle) {
+//DrawLeaves use vesicleDepth as depth to draw leafVesicles
+func DrawLeafVesicle(vesicle *Vesicle, vesicleDepth int) {
 
 }
 
+//MeasureDepth calculate the depth of the vesicles
+//which is used to define the depth of the canvas
 func MeasureDepth(vesicle *Vesicle) int {
+	var vesicleDepth int
+	if vesicle != nil {
+		for _, childVesicle := range vesicle.vesicles {
+			if childVesicle.vesicles == nil {
+				return -1
+			} else {
+				for _, child := range childVesicle.vesicles {
+					vesicleDepth = MeasureDepth(child)
+				}
 
-	return 0
+			}
+		}
+	}
 }
 
-func DrawVesicle(vesicle *Vesicle) {
+//DrawVesicle combine the Canvas of children with CombineCanvas
+func DrawVesicle(vesicle *Vesicle, vesicleDepth int) {
 
 }
 
+//CombineCanvas combine the Casvas horizontally
 func CombineCanvas() {
 
 }
 
-func CreateCanvas() {
+//CreateCanvas create empty canvas (IS THIS FUNCTION NECESSARY???)
+func CreateCanvas(vesicle *Vesicle, vesicleDepth int) {
 
 }
 
