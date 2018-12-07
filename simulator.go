@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 /* ----------------------------------------------------------------------------
 ProLANG Project
 Author: Mert Inan
@@ -13,23 +15,33 @@ Description:	This is the parser code for the ProLANG project.
 type CellBoard []Vesicle
 
 func SimulateCell(cell *Vesicle, numIter int) CellBoard {
+	fmt.Println("beginning simulation!")
 	//Create a cellBoard
 	cellBoard := make(CellBoard, numIter)
 
+	fmt.Println("before add substrates")
 	//Add substrates to cell
 	AddSubstrates(cell)
 
+	fmt.Println("after add substrates")
+	fmt.Println(cell.substrateList[0])
+
 	//Monte Carlo Simulation Loop
 	for i := 0; i < numIter; i++ {
+		fmt.Println("before initialize vesicle!")
 		//Initialize new Cell
 		var newCell *Vesicle
-		newCell.InitializeVesicle()
+		newCell = InitializeVesicle(newCell)
+
+		fmt.Println("after initialize vesicle!")
 
 		//Deep Copy new cell
 		newCell.CopyVesicle(cell)
+		fmt.Println("after deep copy!")
 
 		//Update cell
 		UpdateVesicle(newCell)
+		fmt.Println("after update vesicle!")
 	}
 
 	//Return the cellboard
@@ -44,7 +56,8 @@ func AddSubstrates(cell *Vesicle) {
 
 	//Look for substrate proteins in all vesicles
 	for len(vesicles) != 0 {
-		vesicle := PopVesicle(vesicles)
+		var vesicle *Vesicle
+		vesicle, vesicles = PopVesicle(vesicles)
 		for _, receptor := range vesicle.receptorList {
 			name := receptor.name
 			if !InList(name, substrates) {
@@ -60,10 +73,10 @@ func AddSubstrates(cell *Vesicle) {
 	for _, substrate := range substrates {
 		//Create new substrate object
 		var substrateProtein *Substrate
-		substrateProtein.InitializeSubstrate(substrate)
+		substrateProtein = InitializeSubstrate(substrateProtein, substrate)
 
 		//Put the substrate into cell
-		//cell.proteinList = append(cell.proteinList, substrateProtein) HEEEEEEEERRRRRRRREEEEEEEE
+		cell.substrateList = append(cell.substrateList, substrateProtein)
 	}
 }
 
@@ -78,7 +91,7 @@ func UpdateVesicle(vesicle *Vesicle) {
 
 		//Get the processed protein out
 		for _, substrate := range inrVesicle.substrateList {
-			inrVesicle.PumpOutProtein(substrate)
+			vesicle.substrateList = append(vesicle.substrateList, inrVesicle.PumpOutProtein(substrate))
 		}
 
 		//Do it recursively for the children vesicles
@@ -87,10 +100,10 @@ func UpdateVesicle(vesicle *Vesicle) {
 }
 
 //Pop deletes the initial element of the arr and returns it
-func PopVesicle(vesicles []*Vesicle) *Vesicle {
+func PopVesicle(vesicles []*Vesicle) (*Vesicle, []*Vesicle) {
 	vesicle := vesicles[0]
 	vesicles = append(vesicles[:0], vesicles[1:]...)
-	return vesicle
+	return vesicle, vesicles
 }
 
 func InList(name string, arr []string) bool {
