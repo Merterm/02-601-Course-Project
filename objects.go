@@ -36,9 +36,61 @@ func (vesicle *Vesicle) CopyVesicle(copiedVesicle *Vesicle) {
 	vesicle.name = copiedVesicle.name
 	vesicle.vesicleType = copiedVesicle.vesicleType
 
-	//Deep copy the lists !!!!!TODO!!!!!!!
+	//Copy the objects
+	if copiedVesicle.ifKinase != nil {
+		vesicle.ifKinase = new(IfKinase)
+		vesicle.ifKinase.name = copiedVesicle.ifKinase.name
+		vesicle.ifKinase.receptorName = copiedVesicle.ifKinase.receptorName
+		vesicle.ifKinase.recognizeVesicleName = copiedVesicle.ifKinase.recognizeVesicleName
+	}
 
-	//Call the same function for children vesicles !!!!!TODO!!!!!!!
+	if copiedVesicle.checkerKinase != nil {
+		vesicle.checkerKinase = new(CheckerKinase)
+		vesicle.checkerKinase.name = copiedVesicle.checkerKinase.name
+		vesicle.checkerKinase.checkerType = copiedVesicle.checkerKinase.checkerType
+		vesicle.checkerKinase.phosphoStatus = copiedVesicle.checkerKinase.phosphoStatus
+	}
+
+	if copiedVesicle.glucoTrans != nil {
+		vesicle.glucoTrans = new(Glucotrans)
+		vesicle.glucoTrans.name = copiedVesicle.glucoTrans.name
+		vesicle.glucoTrans.glucoCount = copiedVesicle.glucoTrans.glucoCount
+	}
+
+	//Deep copy the lists
+	if copiedVesicle.receptorList != nil {
+		vesicle.receptorList = make([]*Receptor, 0)
+	}
+	for _, receptor := range copiedVesicle.receptorList {
+		tmpReceptor := new(Receptor)
+		tmpReceptor.name = receptor.name
+		tmpReceptor.phosphoStatus = receptor.phosphoStatus
+		tmpReceptor.locSignalRec = receptor.locSignalRec
+		vesicle.receptorList = append(vesicle.receptorList, tmpReceptor)
+	}
+
+	if copiedVesicle.substrateList != nil {
+		vesicle.substrateList = make([]*Substrate, 0)
+	}
+	for _, substrate := range copiedVesicle.substrateList {
+		tmpSubstrate := new(Substrate)
+		tmpSubstrate.name = substrate.name
+		tmpSubstrate.glucoCount = substrate.glucoCount
+		tmpSubstrate.phosphoStatus = substrate.phosphoStatus
+		tmpSubstrate.locSignal = substrate.locSignal
+		vesicle.substrateList = append(vesicle.substrateList, tmpSubstrate)
+	}
+
+	//Call the same function for children vesicles
+	if copiedVesicle.vesicles != nil {
+		vesicle.vesicles = make([]*Vesicle, 0)
+	}
+	for _, vesicle := range copiedVesicle.vesicles {
+		var tmpVesicle *Vesicle
+		tmpVesicle = InitializeVesicle(tmpVesicle)
+		tmpVesicle.CopyVesicle(vesicle)
+		vesicle.vesicles = append(vesicle.vesicles, tmpVesicle)
+	}
 }
 
 //TakeInProtein add protein to proteinList if it could be recognized by the
@@ -72,22 +124,25 @@ func (vesicle *Vesicle) AddReceptor(receptor *Receptor) {
 
 //!!!!!!!!!!! TODO !!!! Need to return a pointer to protein and increment its locSignal
 //PumpOutProtein remove the protein from proteinList
-func (vesicle *Vesicle) PumpOutProtein(substrate *Substrate) {
+func (vesicle *Vesicle) PumpOutProtein(substrate *Substrate) *Substrate {
 	if vesicle.substrateList != nil {
 		for number, theProtein := range vesicle.substrateList {
 			if theProtein.name == substrate.name {
-				vesicle.RemoveFromProteinList(number)
+				substrate := vesicle.RemoveFromProteinList(number)
+				substrate.locSignal++
+				return substrate
 			}
 		}
-	} else {
-		panic("protein list is empty")
 	}
+	return nil
 }
 
 //RemoveFromProteinList delete the element from proteinList
-func (vesicle *Vesicle) RemoveFromProteinList(number int) {
+func (vesicle *Vesicle) RemoveFromProteinList(number int) *Substrate {
+	tmpProtein := vesicle.substrateList[number]
 	vesicle.substrateList = append(vesicle.substrateList[:number],
 		vesicle.substrateList[number+1:]...)
+	return tmpProtein
 }
 
 //DoReactionInside
@@ -138,12 +193,15 @@ func (vesicle *Vesicle) DoIfReaction() {
 						receptor.Activate()
 					}
 				}
+			} else {
+				panic("There is no conditional vesicle inside")
 			}
-			panic("There is no conditional vesicle inside")
+		} else {
+			panic("There are not enough vesicles inside!")
 		}
-		panic("There are not enough vesicles inside!")
+	} else {
+		panic("There is no if kinase to carry out if reaction!")
 	}
-	panic("There is no if kinase to carry out if reaction!")
 }
 
 func (vesicle *Vesicle) DoWhileReaction() {
@@ -175,12 +233,15 @@ func (vesicle *Vesicle) DoWhileReaction() {
 						receptor.Activate()
 					}
 				} // !!!!!!!! TODO !!!! YOU HAVE TO CHANGE THE LOCSIGNAL (DECREMENT MAYBE)
+			} else {
+				panic("There is no conditional vesicle inside")
 			}
-			panic("There is no conditional vesicle inside")
+		} else {
+			panic("There are not enough vesicles inside!")
 		}
-		panic("There are not enough vesicles inside!")
+	} else {
+		panic("There is no if kinase to carry out while reaction!")
 	}
-	panic("There is no if kinase to carry out while reaction!")
 }
 
 func (vesicle *Vesicle) DoAssignmentReaction() {
@@ -190,8 +251,9 @@ func (vesicle *Vesicle) DoAssignmentReaction() {
 		for _, substrate := range vesicle.substrateList {
 			vesicle.glucoTrans.TransferGlucose(substrate)
 		}
+	} else {
+		panic("No glucosyltransferase to do assignment reaction!")
 	}
-	panic("No glucosyltransferase to do assignment reaction!")
 }
 
 func (vesicle *Vesicle) DoConditionalReaction() {
@@ -212,6 +274,8 @@ func (vesicle *Vesicle) DoConditionalReaction() {
 				vesicle.checkerKinase.SetPhosphoStatus(false)
 			}
 		}
+	} else {
+		panic("No checker kinase to do conditional reaction!")
 	}
 }
 
@@ -222,8 +286,9 @@ func (vesicle *Vesicle) DoArithmeticReaction() {
 		for _, substrate := range vesicle.substrateList {
 			vesicle.glucoTrans.TransferGlucose(substrate)
 		}
+	} else {
+		panic("No glucosyltransferase to do arithmetic reaction!")
 	}
-	panic("No glucosyltransferase to do arithmetic reaction!")
 }
 
 /******************************************************************************
