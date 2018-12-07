@@ -1,5 +1,6 @@
 package main
 
+/*
 //DrawTheCell includes following steps
 //1. draw the leaves
 //2. combine the child if they are from same node and draw the line

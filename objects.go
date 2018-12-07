@@ -4,7 +4,8 @@ package main
 ProLANG Project
 Author: Ian Lee & Mert Inan
 Date: 30 Nov 2018
-Description:
+Description: This is the object declaration file. All of the objects that are
+						required by ProLANG are shown here.
 -----------------------------------------------------------------------------*/
 
 /******************************************************************************
@@ -23,6 +24,7 @@ type Vesicle struct {
 	vesicles      []*Vesicle
 }
 
+//InitializeVesicle creates a new vesicle object and returns it.
 func InitializeVesicle(vesicle *Vesicle) *Vesicle {
 	vesicle = new(Vesicle)
 	vesicle.substrateList = make([]*Substrate, 0)
@@ -31,6 +33,7 @@ func InitializeVesicle(vesicle *Vesicle) *Vesicle {
 	return vesicle
 }
 
+//CopyVesicle deep copies the vesicle, initializing new arrays.
 func (vesicle *Vesicle) CopyVesicle(copiedVesicle *Vesicle) {
 	//Copy the trivial parameters
 	vesicle.name = copiedVesicle.name
@@ -122,7 +125,7 @@ func (vesicle *Vesicle) AddReceptor(receptor *Receptor) {
 	vesicle.receptorList = append(vesicle.receptorList, receptor)
 }
 
-//!!!!!!!!!!! TODO !!!! Need to return a pointer to protein and increment its locSignal
+//Need to return a pointer to protein and increment its locSignal
 //PumpOutProtein remove the protein from proteinList
 func (vesicle *Vesicle) PumpOutProtein(substrate *Substrate) *Substrate {
 	if vesicle.substrateList != nil {

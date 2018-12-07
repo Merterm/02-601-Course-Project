@@ -6,14 +6,18 @@ import "fmt"
 ProLANG Project
 Author: Mert Inan
 Date: 01 Dec 2018
-Description:	This is the parser code for the ProLANG project.
-              This program reads a specific code in ProLANG and generates the
-              parse tree for it. Highest level function is the Parse(filename)
-              function. It takes the filename of the ProLANG file.
+Description:	This is the simulator code for the ProLANG project.
+              Main function receives a static cell object and then runs
+              Monte Carlo simulation on it. The function checks recursively
+              every protein and vesicle to
 -----------------------------------------------------------------------------*/
 
+//CellBoard is a slice of Vesicle objects to store each iteration of the
+//simulation.
 type CellBoard []Vesicle
 
+//SimulateCell simulates a given cell for numIter iterations. It returns every
+//iteration on a cell array.
 func SimulateCell(cell *Vesicle, numIter int) CellBoard {
 	fmt.Println("beginning simulation!")
 	//Create a cellBoard
@@ -48,6 +52,8 @@ func SimulateCell(cell *Vesicle, numIter int) CellBoard {
 	return cellBoard
 }
 
+//AddSubstrates checks the receptor in all the nested vesicles and then adds
+//found substrates from the top level cell.
 func AddSubstrates(cell *Vesicle) {
 	//initialize arrays
 	substrates := make([]string, 0)
@@ -80,6 +86,8 @@ func AddSubstrates(cell *Vesicle) {
 	}
 }
 
+//UpdateVesicle is a recursive function that updates the vesicle by following
+//three steps: take in protein, do reaction and pupm out.
 func UpdateVesicle(vesicle *Vesicle) {
 	for _, inrVesicle := range vesicle.vesicles {
 		for _, substrate := range vesicle.substrateList {
@@ -99,13 +107,14 @@ func UpdateVesicle(vesicle *Vesicle) {
 	}
 }
 
-//Pop deletes the initial element of the arr and returns it
+//PopVesicle deletes the initial element of the arr and returns it
 func PopVesicle(vesicles []*Vesicle) (*Vesicle, []*Vesicle) {
 	vesicle := vesicles[0]
 	vesicles = append(vesicles[:0], vesicles[1:]...)
 	return vesicle, vesicles
 }
 
+//InList checks whether the given name is in the given array arr.
 func InList(name string, arr []string) bool {
 	for i := 0; i < len(arr); i++ {
 		if arr[i] == name {

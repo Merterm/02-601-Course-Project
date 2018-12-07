@@ -1,3 +1,13 @@
-hello world?
-No, thank you.
-Yes thank you
+a := 2
+a = a + 3
+b := 3
+while a < b {
+  if a < b {
+    m := 3
+    if b < a {
+      a = a + 1
+    }
+  }
+  a = a + 3
+  b = b + 5
+}

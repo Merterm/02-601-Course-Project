@@ -4,11 +4,13 @@ package main
 ProLANG Project
 Author: Ian Lee
 Date: 30 Nov 2018
-Description:
+Description: This is the conversion code that converts a parse tree object into
+						its equivalent vesicle object. It contains a recursive function
+						to go over the nodes of the tree and convert it into a nested
+						vesicle.
 -----------------------------------------------------------------------------*/
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -31,7 +33,7 @@ const ARTH string = "ARTH"
 //Create a vesicle for each iteration
 //Base case: the last second level. Process the children into vesicle, and add
 //           this vesicle to the vesicle.
-//Recurssive case: call the recurssion for the child, add the vesicle to the vesicle
+//Recursive case: call the recurssion for the child, add the vesicle to the vesicle
 func TreeTraversal(parseTree ParseTree) *Vesicle {
 	vesicle := new(Vesicle) //the new function return a pointer to the object
 	(*vesicle).vesicles = make([]*Vesicle, 0)
@@ -42,20 +44,15 @@ func TreeTraversal(parseTree ParseTree) *Vesicle {
 				//if it's == nil means now we are on the second last level
 				if child.children == nil {
 					//append the vesicle we created to the vesicle in this level
-					//fmt.Println("reach the leaves the current node is: ", (*parseTree).name, child.name)
 					vesicle = GenerateProtein(parseTree)
 				} else {
 					//if it it not the second last level, then call TreeTraversal
-					//fmt.Println("not the leaves the current node is: ", (*parseTree).name, child.name)
 					childvesicle := TreeTraversal(child)
 
 					//Assign the order of vesicle operation on receptor's LocSignalRec
 					//in every level
-					//fmt.Println("current node is ", parseTree.name, ", child is ", child.name)
-					//fmt.Println("the receptor name is ", (*childvesicle).receptorList[0])
 					for i := 0; i < len((*childvesicle).receptorList); i++ {
 						(*childvesicle).receptorList[i].locSignalRec = num
-						fmt.Println(child, (*childvesicle).receptorList[i].locSignalRec)
 					}
 
 					vesicle.vesicles = append(vesicle.vesicles, childvesicle)

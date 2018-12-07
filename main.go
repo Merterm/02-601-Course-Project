@@ -1,8 +1,8 @@
 package main
 
+/*
 import "fmt"
 
-/*
 import (
 	"bufio"
 	"fmt"
@@ -30,7 +30,7 @@ type Protein struct {
 type Cell struct {
 	proteinList []Protein
 }
-*/
+
 func main() {
 
 	var code, assign, assignName, assignValue, assign2, assign2Name, assign2Value Node
@@ -76,7 +76,7 @@ func main() {
 	//fmt.Println("main ", condition.children[0].name, condition.children[1].name, condition.children[2].name)
 	fmt.Println("main ", vesicle.vesicles[0])
 	fmt.Println()
-	/*
+
 		//Creating empty cell structure
 		cell := CreateCell()
 
@@ -84,10 +84,10 @@ func main() {
 		var filename = "field.txt"
 		code := ReadCode(filename)
 		fmt.Println(ConvertToProtein(cell, code))
-	*/
+
 }
 
-/*
+
 //CreateCell create the Cell structure, this will be the space where protein interacts.
 func CreateCell() Cell {
 	var cell Cell
