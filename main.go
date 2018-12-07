@@ -29,17 +29,17 @@ type Cell struct {
 	proteinList []Protein
 }
 */
-func main() {
-	/*
-		//Creating empty cell structure
-		cell := CreateCell()
+//func main() {
+/*
+	//Creating empty cell structure
+	cell := CreateCell()
 
-		//reading the code and create protein
-		var filename = "field.txt"
-		code := ReadCode(filename)
-		fmt.Println(ConvertToProtein(cell, code))
-	*/
-}
+	//reading the code and create protein
+	var filename = "field.txt"
+	code := ReadCode(filename)
+	fmt.Println(ConvertToProtein(cell, code))
+*/
+//}
 
 /*
 //CreateCell create the Cell structure, this will be the space where protein interacts.
