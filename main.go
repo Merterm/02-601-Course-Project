@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 /*
 import (
 	"bufio"
@@ -30,6 +32,49 @@ type Cell struct {
 }
 */
 func main() {
+
+	var code, assign, assignName, assignValue, assign2, assign2Name, assign2Value Node
+	var code2, ifNode, condition, conditionName, conditionSymbol, conditionValue Node
+	var arth, arthName, arthSymbol, arthValue Node
+	var parseTree ParseTree
+	code.name = "CODE"
+	assign.name = "ASSIGN"
+	assignName.name = "a"
+	assignValue.name = "2"
+	assign2.name = "ASSIGN"
+	assign2Name.name = "b"
+	assign2Value.name = "3"
+	code2.name = "CODE"
+	ifNode.name = "IF"
+	condition.name = "COND"
+	conditionName.name = "a"
+	conditionSymbol.name = "=="
+	conditionValue.name = "2"
+	arth.name = "ARTH"
+	arthName.name = "a"
+	arthSymbol.name = "+"
+	arthValue.name = "1"
+	code.children = make([]*Node, 0)
+	assign.children = make([]*Node, 0)
+	assign2.children = make([]*Node, 0)
+	code2.children = make([]*Node, 0)
+	ifNode.children = make([]*Node, 0)
+	condition.children = make([]*Node, 0)
+
+	arth.children = make([]*Node, 0)
+
+	code.children = append(code.children, &assign, &assign2, &code2)
+	assign.children = append(assign.children, &assignName, &assignValue)
+	assign2.children = append(assign2.children, &assign2Name, &assign2Value)
+	code2.children = append(code2.children, &ifNode)
+	ifNode.children = append(ifNode.children, &condition, &arth)
+	condition.children = append(condition.children, &conditionName, &conditionSymbol, &conditionValue)
+	arth.children = append(arth.children, &arthName, &arthSymbol, &arthValue)
+
+	parseTree = &code
+	vesicle := TreeTraversal(parseTree)
+	//fmt.Println("main ", condition.children[0].name, condition.children[1].name, condition.children[2].name)
+	fmt.Println("main ", vesicle.vesicles[0].vesicles)
 	/*
 		//Creating empty cell structure
 		cell := CreateCell()
