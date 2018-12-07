@@ -43,7 +43,7 @@ func TreeTraversal(parseTree ParseTree) *Vesicle {
 				if child.children == nil {
 					//append the vesicle we created to the vesicle in this level
 					//fmt.Println("reach the leaves the current node is: ", (*parseTree).name, child.name)
-					vesicle.vesicles = append(vesicle.vesicles, GenerateProtein(parseTree))
+					vesicle = GenerateProtein(parseTree)
 				} else {
 					//if it it not the second last level, then call TreeTraversal
 					//fmt.Println("not the leaves the current node is: ", (*parseTree).name, child.name)
@@ -53,12 +53,9 @@ func TreeTraversal(parseTree ParseTree) *Vesicle {
 					//in every level
 					//fmt.Println("current node is ", parseTree.name, ", child is ", child.name)
 					//fmt.Println("the receptor name is ", (*childvesicle).receptorList[0])
-					/******************
-					Solve this problem, the locsignalRec doesn't work
-					******************/
 					for i := 0; i < len((*childvesicle).receptorList); i++ {
 						(*childvesicle).receptorList[i].locSignalRec = num
-						fmt.Println((*childvesicle).receptorList[i].locSignalRec)
+						fmt.Println(child, (*childvesicle).receptorList[i].locSignalRec)
 					}
 
 					vesicle.vesicles = append(vesicle.vesicles, childvesicle)
@@ -78,12 +75,9 @@ func TreeTraversal(parseTree ParseTree) *Vesicle {
 						ifKinase.recognizeVesicleName = parseTree.children[0].name
 						vesicle.ifKinase = ifKinase
 						vesicle.vesicleType = WHILE
-						//// TODO: how to add label for the while loop???????
 					}
-
 				}
 			}
-
 		}
 	}
 	return vesicle

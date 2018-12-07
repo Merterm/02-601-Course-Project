@@ -74,7 +74,8 @@ func main() {
 	parseTree = &code
 	vesicle := TreeTraversal(parseTree)
 	//fmt.Println("main ", condition.children[0].name, condition.children[1].name, condition.children[2].name)
-	fmt.Println("main ", vesicle.vesicles[0].vesicles)
+	fmt.Println("main ", vesicle.vesicles[0])
+	fmt.Println()
 	/*
 		//Creating empty cell structure
 		cell := CreateCell()
